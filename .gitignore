@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+*.log
+.DS_Store
+.env
+.env.local
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
