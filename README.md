@@ -1,3 +1,5 @@
+![mdvu logo](public/LL-mdvu-logo-v1.png)
+
 # 🐺 mdvu v1.0.0.0
 
 a minimal, offline browser-based dark-themed markdown viewer. drag n drop a `.md` file onto the page. doesn't upload or anything, completely local
