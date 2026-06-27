@@ -205,73 +205,6 @@ article pre code {
   background: transparent !important;
 }
 
-/* Navigation */
-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  padding: 0 2rem;
-  height: 44px;
-  border-bottom: 1px solid var(--ink-dim);
-  background: rgba(11, 10, 16, 0.85);
-  backdrop-filter: blur(12px);
-  gap: 1rem;
-}
-
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.nav-logo {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-  opacity: 0.9;
-}
-
-.nav-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: 0.04em;
-}
-
-.nav-file {
-  flex: 1;
-  font-size: 12px;
-  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
-  color: rgba(170, 156, 255, 0.45);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-button {
-  background: none;
-  border: 1px solid var(--ink-dim);
-  color: rgba(170, 156, 255, 0.5);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
-}
-
-button:hover {
-  border-color: var(--ink);
-  color: var(--ink);
-}
 
 /* Landing page */
 .landing {
@@ -330,7 +263,7 @@ button:hover {
 
 /* Reader */
 .reader {
-  padding: 80px 2rem 8rem;
+  padding: 4rem 2rem 8rem;
 }
 
 /* Progress bar */

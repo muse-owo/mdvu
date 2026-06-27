@@ -4,9 +4,7 @@
   import hljs from 'highlight.js';
   import 'highlight.js/styles/github-dark.css';
 
-  let fileInput = $state();
   let content = $state('');
-  let fileName = $state('');
   let showLanding = $state(true);
   let dragDepth = 0;
   let scrollProgress = $state(0);
@@ -22,11 +20,7 @@
   marked.use({ renderer });
 
   onMount(() => {
-
-    // scroll progress
     window.addEventListener('scroll', updateScrollProgress);
-
-    // drag and drop — attached here for reliable Svelte 5 / Astro SSR hydration
     document.addEventListener('dragenter', handleDragEnter);
     document.addEventListener('dragleave', handleDragLeave);
     document.addEventListener('dragover', handleDragOver);
@@ -53,7 +47,6 @@
     try {
       const text = await file.text();
       content = marked.parse(text);
-      fileName = file.name;
       showLanding = false;
       await tick();
       document.title = `mdvu — ${file.name}`;
@@ -64,35 +57,14 @@
     }
   }
 
-  function reset() {
-    content = '';
-    fileName = '';
-    showLanding = true;
-    document.title = 'mdvu';
-    document.body.classList.remove('reading');
-    scrollProgress = 0;
-  }
-
   function handleFileSelect(e) {
     loadFile(e.target.files[0]);
     e.target.value = '';
   }
 
-  function openFileInput() {
-    const el = fileInput ?? document.getElementById('fileinput');
-    if (el) el.click();
-  }
-
-  function handleLogoClick(e) {
-    e.preventDefault();
-    reset();
-  }
-
   function handleDragEnter(e) {
     e.preventDefault();
-    if (++dragDepth === 1) {
-      document.body.classList.add('drag-over');
-    }
+    if (++dragDepth === 1) document.body.classList.add('drag-over');
   }
 
   function handleDragLeave() {
@@ -116,32 +88,6 @@
 
 <div class="progress-bar" style="width: {scrollProgress}%"></div>
 
-<nav>
-  <a class="nav-brand" href="#" onclick={handleLogoClick}>
-    <img
-      class="nav-logo"
-      src="./LL-mdvu-logo-v1.png"
-      alt="mdvu"
-      onerror={(e) => { e.currentTarget.style.display = 'none'; }}
-    />
-    <span class="nav-name">mdvu</span>
-  </a>
-  <span class="nav-file">{fileName}</span>
-  <button
-    onclick={openFileInput}
-  >
-    open
-  </button>
-    <input
-        bind:this={fileInput}
-        id="fileinput"
-        type="file"
-        accept=".md,.markdown,.txt"
-        onchange={handleFileSelect}
-        style="display: none"
-    />
-</nav>
-
 {#if showLanding}
   <div class="landing">
     <img
@@ -155,6 +101,13 @@
       drop a .md file anywhere &nbsp;·&nbsp;
       <label for="fileinput">click to open</label>
     </p>
+    <input
+      id="fileinput"
+      type="file"
+      accept=".md,.markdown,.txt"
+      onchange={handleFileSelect}
+      style="display: none"
+    />
   </div>
 {:else}
   <div class="reader">
@@ -176,9 +129,5 @@
 
   :global(body.reading) .progress-bar {
     opacity: 1;
-  }
-
-  button {
-    flex-shrink: 0;
   }
 </style>
