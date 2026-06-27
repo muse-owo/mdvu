@@ -21,6 +21,7 @@
 
   onMount(() => {
     window.addEventListener('scroll', updateScrollProgress);
+    window.addEventListener('keydown', handleKeyDown);
     document.addEventListener('dragenter', handleDragEnter);
     document.addEventListener('dragleave', handleDragLeave);
     document.addEventListener('dragover', handleDragOver);
@@ -28,6 +29,7 @@
 
     return () => {
       window.removeEventListener('scroll', updateScrollProgress);
+      window.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('dragenter', handleDragEnter);
       document.removeEventListener('dragleave', handleDragLeave);
       document.removeEventListener('dragover', handleDragOver);
@@ -60,6 +62,16 @@
   function handleFileSelect(e) {
     loadFile(e.target.files[0]);
     e.target.value = '';
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Escape' && !showLanding) {
+      content = '';
+      showLanding = true;
+      document.title = 'mdvu';
+      document.body.classList.remove('reading');
+      scrollProgress = 0;
+    }
   }
 
   function handleDragEnter(e) {
@@ -98,8 +110,8 @@
     />
     <h1 class="wordmark">mdvu<span class="wolf">🐺</span></h1>
     <p class="drop-hint">
-      drop a .md file anywhere &nbsp;·&nbsp;
-      <label for="fileinput">click to open</label>
+      drag+drop your .md anywhere &nbsp;·&nbsp;
+      <label for="fileinput">browse</label>
     </p>
     <input
       id="fileinput"
