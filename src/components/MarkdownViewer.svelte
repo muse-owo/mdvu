@@ -120,7 +120,7 @@
   <a class="nav-brand" href="#" onclick={handleLogoClick}>
     <img
       class="nav-logo"
-      src="/LL-mdvu-logo-v1.png"
+      src="./LL-mdvu-logo-v1.png"
       alt="mdvu"
       onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
@@ -146,7 +146,7 @@
   <div class="landing">
     <img
       class="hero-logo"
-      src="/LL-mdvu-logo-v1.png"
+      src="./LL-mdvu-logo-v1.png"
       alt=""
       onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
