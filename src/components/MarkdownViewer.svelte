@@ -1,31 +1,43 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
+  import { marked, Renderer } from 'marked';
+  import hljs from 'highlight.js';
+  import 'highlight.js/styles/github-dark.css';
 
-  let fileInput;
-  let content = '';
-  let fileName = '';
-  let showLanding = true;
+  let fileInput = $state();
+  let content = $state('');
+  let fileName = $state('');
+  let showLanding = $state(true);
   let dragDepth = 0;
-  let scrollProgress = 0;
-  let markedRenderer;
+  let scrollProgress = $state(0);
+
+  // setup marked renderer with highlight.js
+  const renderer = new Renderer();
+  renderer.code = function(token) {
+    const code = typeof token === 'object' ? token.text : token;
+    const lang = typeof token === 'object' ? token.lang : '';
+    const l = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+    return `<pre><code class="hljs">${hljs.highlight(code, { language: l }).value}</code></pre>`;
+  };
+  marked.use({ renderer });
 
   onMount(() => {
-    // setup marked renderer with highlight.js
-    markedRenderer = new window.marked.Renderer();
-    markedRenderer.code = function(token) {
-      const code = typeof token === 'object' ? token.text : token;
-      const lang = typeof token === 'object' ? token.lang : arguments[1];
-      const l = lang && window.hljs.getLanguage(lang) ? lang : 'plaintext';
-      return `<pre><code class="hljs">${
-        window.hljs.highlight(code, { language: l }).value
-      }</code></pre>`;
-    };
-    window.marked.use({ renderer: markedRenderer });
 
-    // handle scroll progress
+    // scroll progress
     window.addEventListener('scroll', updateScrollProgress);
+
+    // drag and drop — attached here for reliable Svelte 5 / Astro SSR hydration
+    document.addEventListener('dragenter', handleDragEnter);
+    document.addEventListener('dragleave', handleDragLeave);
+    document.addEventListener('dragover', handleDragOver);
+    document.addEventListener('drop', handleDrop);
+
     return () => {
       window.removeEventListener('scroll', updateScrollProgress);
+      document.removeEventListener('dragenter', handleDragEnter);
+      document.removeEventListener('dragleave', handleDragLeave);
+      document.removeEventListener('dragover', handleDragOver);
+      document.removeEventListener('drop', handleDrop);
     };
   });
 
@@ -36,22 +48,21 @@
     }
   }
 
-  function loadFile(file) {
+  async function loadFile(file) {
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      content = window.marked.parse(e.target.result);
+    try {
+      const text = await file.text();
+      console.log('[mdvu] file read ok, parsing...');
+      content = marked.parse(text);
       fileName = file.name;
       showLanding = false;
+      await tick();
       document.title = `mdvu — ${file.name}`;
       document.body.classList.add('reading');
-
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 10);
-    };
-    reader.readAsText(file);
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error('[mdvu] loadFile error:', err);
+    }
   }
 
   function reset() {
@@ -69,7 +80,10 @@
   }
 
   function openFileInput() {
-    fileInput?.click();
+    console.log('[mdvu] openFileInput, fileInput=', fileInput);
+    const el = fileInput ?? document.getElementById('fileinput');
+    if (el) el.click();
+    else console.error('[mdvu] no file input found');
   }
 
   function handleLogoClick(e) {
@@ -102,13 +116,6 @@
     loadFile(e.dataTransfer.files[0]);
   }
 </script>
-
-<svelte:document
-  ondragenter={handleDragEnter}
-  ondragleave={handleDragLeave}
-  ondragover={handleDragOver}
-  ondrop={handleDrop}
-/>
 
 <div class="progress-bar" style="width: {scrollProgress}%"></div>
 
