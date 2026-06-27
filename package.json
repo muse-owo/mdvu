@@ -9,12 +9,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^4.10.0",
-    "svelte": "^4.2.0",
+    "astro": "^7.0.3",
+    "highlight.js": "^11.9.0",
     "marked": "^9.1.6",
-    "highlight.js": "^11.9.0"
+    "svelte": "^5.56.4"
   },
   "devDependencies": {
-    "@astrojs/svelte": "^5.0.0"
+    "@astrojs/svelte": "^9.0.0"
   }
 }

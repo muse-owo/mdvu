@@ -68,6 +68,15 @@
     e.target.value = '';
   }
 
+  function openFileInput() {
+    fileInput?.click();
+  }
+
+  function handleLogoClick(e) {
+    e.preventDefault();
+    reset();
+  }
+
   function handleDragEnter(e) {
     e.preventDefault();
     if (++dragDepth === 1) {
@@ -95,40 +104,38 @@
 </script>
 
 <svelte:document
-  on:dragenter={handleDragEnter}
-  on:dragleave={handleDragLeave}
-  on:dragover={handleDragOver}
-  on:drop={handleDrop}
+  ondragenter={handleDragEnter}
+  ondragleave={handleDragLeave}
+  ondragover={handleDragOver}
+  ondrop={handleDrop}
 />
 
 <div class="progress-bar" style="width: {scrollProgress}%"></div>
 
 <nav>
-  <a class="nav-brand" href="#" on:click={(e) => {
-    e.preventDefault();
-    reset();
-  }}>
+  <a class="nav-brand" href="#" onclick={handleLogoClick}>
     <img
       class="nav-logo"
       src="/LL-mdvu-logo-v1.png"
       alt="mdvu"
-      onerror="this.style.display='none'"
+      onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
     <span class="nav-name">mdvu</span>
   </a>
   <span class="nav-file">{fileName}</span>
   <button
-    on:click={() => fileInput?.click()}
+    onclick={openFileInput}
   >
     open
   </button>
-  <input
-    bind:this={fileInput}
-    type="file"
-    accept=".md,.markdown,.txt"
-    on:change={handleFileSelect}
-    style="display: none"
-  />
+    <input
+        bind:this={fileInput}
+        id="fileinput"
+        type="file"
+        accept=".md,.markdown,.txt"
+        onchange={handleFileSelect}
+        style="display: none"
+    />
 </nav>
 
 {#if showLanding}
@@ -137,7 +144,7 @@
       class="hero-logo"
       src="/LL-mdvu-logo-v1.png"
       alt=""
-      onerror="this.style.display='none'"
+      onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
     <h1 class="wordmark">mdvu</h1>
     <p class="drop-hint">
