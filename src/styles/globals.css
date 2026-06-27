@@ -303,6 +303,12 @@ button:hover {
   user-select: none;
 }
 
+.wolf {
+  font-size: 0.5em;
+  margin-left: 0.15em;
+  vertical-align: middle;
+}
+
 .drop-hint {
   font-size: 13px;
   color: rgba(226, 223, 245, 0.3);

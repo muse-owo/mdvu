@@ -52,7 +52,6 @@
     if (!file) return;
     try {
       const text = await file.text();
-      console.log('[mdvu] file read ok, parsing...');
       content = marked.parse(text);
       fileName = file.name;
       showLanding = false;
@@ -61,7 +60,7 @@
       document.body.classList.add('reading');
       window.scrollTo(0, 0);
     } catch (err) {
-      console.error('[mdvu] loadFile error:', err);
+      console.error(err);
     }
   }
 
@@ -80,10 +79,8 @@
   }
 
   function openFileInput() {
-    console.log('[mdvu] openFileInput, fileInput=', fileInput);
     const el = fileInput ?? document.getElementById('fileinput');
     if (el) el.click();
-    else console.error('[mdvu] no file input found');
   }
 
   function handleLogoClick(e) {
@@ -153,7 +150,7 @@
       alt=""
       onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
-    <h1 class="wordmark">mdvu</h1>
+    <h1 class="wordmark">mdvu<span class="wolf">🐺</span></h1>
     <p class="drop-hint">
       drop a .md file anywhere &nbsp;·&nbsp;
       <label for="fileinput">click to open</label>
