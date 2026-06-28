@@ -8,6 +8,9 @@
   let showLanding = $state(true);
   let dragDepth = 0;
   let scrollProgress = $state(0);
+  let watchHandle = null;
+  let watchInterval = null;
+  let lastModified = 0;
 
   // setup marked renderer with highlight.js
   const renderer = new Renderer();
@@ -51,12 +54,49 @@
       content = marked.parse(text);
       showLanding = false;
       await tick();
-      document.title = `mdvu — ${file.name}`;
+      document.title = `mdvu | ${file.name}`;
       document.body.classList.add('reading');
       window.scrollTo(0, 0);
     } catch (err) {
       console.error(err);
     }
+  }
+
+    // loads a file from a FileSystemFileHandle and starts watching it
+  async function loadFromHandle(handle) {
+    stopWatching();                          // clear any previous watcher first
+    watchHandle = handle;
+    const file = await handle.getFile();    // get current snapshot
+    lastModified = file.lastModified;
+    await loadFile(file);                   // render it
+    startWatching();                        // then begin polling
+  }
+
+  // poll the handle every 500ms, re-render on change
+  function startWatching() {
+    watchInterval = setInterval(async () => {
+      if (!watchHandle) return;
+      try {
+        const file = await watchHandle.getFile();
+        if (file.lastModified !== lastModified) {
+          lastModified = file.lastModified;
+          const text = await file.text();
+          content = marked.parse(text);     // $state update - Svelte re-renders
+        }
+      } catch {
+        stopWatching();                     // handle went stale (file deleted/moved)
+      }
+    }, 500);
+  }
+
+  // clean up err'tang
+  function stopWatching() {
+    if (watchInterval) {
+      clearInterval(watchInterval);
+      watchInterval = null;
+    }
+    watchHandle = null;
+    lastModified = 0;
   }
 
   function handleFileSelect(e) {
