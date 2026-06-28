@@ -72,6 +72,26 @@
     startWatching();                        // then begin polling
   }
 
+  async function handleBrowseClick(e) {
+    if (!('showOpenFilePicker' in window)) return;  // no api, let label trigger the input
+
+    e.preventDefault();
+
+    try {
+      const [handle] = await window.ShowOpenFilePicker({
+        types: [{
+          description: 'Markdown';
+          accept: { 'text/plain':['.md', '.markdown', '.txt']},
+        }],
+        await loadFromHandle(handle);   // loads+starts watchin
+      } catch (err) {
+        if (err.name !== 'AbortError') console.error(err);  // AbortError = user cancelled; ignore
+      }
+    )
+    }
+    
+  }
+
   // poll the handle every 500ms, re-render on change
   function startWatching() {
     watchInterval = setInterval(async () => {
@@ -130,11 +150,24 @@
     e.preventDefault();
   }
 
-  function handleDrop(e) {
-    e.preventDefault();
-    dragDepth = 0;
-    document.body.classList.remove('drag-over');
-    loadFile(e.dataTransfer.files[0]);
+  async function handleDrop(e) {
+      e.preventDefault();
+      dragDepth = 0;
+      document.body.classList.remove('drag-over');
+
+      // try to get a FlieSystemFileHandle for live watching
+      const item = e.dataTransfer.items(0)
+      if (item?.kind === 'file' && item.getAsFileSystemHandle) {
+        try {
+            const handle = await item.getAsFileSystemHandle();
+            if (handle.kind === 'file') {
+              await loadFromHandle(handle);
+              return;
+            }
+        } catch { /* fall through */ }
+      }
+      // fallback: plain File, no watching (old  browser, Safari, or weird drop source)
+      loadFile(e.dataTransfer.files[0]);
   }
 </script>
 
@@ -151,7 +184,7 @@
     <h1 class="wordmark">mdvu<span class="wolf">🐺</span></h1>
     <p class="drop-hint">
       drag+drop your .md anywhere &nbsp;·&nbsp;
-      <label for="fileinput">browse</label>
+      <label for="fileinput" onclick={handleBrowseClick}>browse</label>
     </p>
     <input
       id="fileinput"
