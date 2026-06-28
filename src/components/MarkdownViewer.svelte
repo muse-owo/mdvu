@@ -178,7 +178,7 @@
   <div class="landing">
     <img
       class="hero-logo"
-      src="./LL-mdvu-logo-v1.png"
+      src="/mdvu/LL-mdvu-logo-v1.png"
       alt=""
       onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
