@@ -10,7 +10,6 @@
   let scrollProgress = $state(0);
   let watchHandle = null;
   let watchInterval = null;
-  let lastModified = 0;
 
   // setup marked renderer with highlight.js
   const renderer = new Renderer();
@@ -63,21 +62,16 @@
     }
   }
 
-    // loads a file from a FileSystemFileHandle and starts watching it
+  // loads a file from a FileSystemFileHandle and starts watching it
   async function loadFromHandle(handle) {
     stopWatching();                          // clear any previous watcher first
     watchHandle = handle;
-    const file = await handle.getFile();    // get current snapshot
-    lastModified = file.lastModified;
-    await loadFile(file);                   // render it
-    startWatching();                        // then begin polling
+    const file = await handle.getFile();
+    await loadFile(file);
+    startWatching();
   }
 
-  async function handleBrowseClick(e) {
-    if (!('showOpenFilePicker' in window)) return;  // no api, let label trigger the input
-
-    e.preventDefault();
-
+  async function handleBrowseClick() {
     try {
       const [handle] = await window.showOpenFilePicker({
         types: [{
@@ -86,42 +80,37 @@
         }],
         multiple: false,
       });
-      await loadFromHandle(handle);        // loads+starts watching
+      await loadFromHandle(handle);
     } catch (err) {
-      if (err.name !== 'AbortError') console.error(err); // aborterror = user cancelled, ignore
+      if (err.name !== 'AbortError') console.error(err);
     }
   }
 
   // poll the handle every 500ms, re-render on change
   function startWatching() {
+    let lastContent = null;
     watchInterval = setInterval(async () => {
       if (!watchHandle) return;
       try {
         const file = await watchHandle.getFile();
-        if (file.lastModified !== lastModified) {
-          lastModified = file.lastModified;
-          const text = await file.text();
-          content = marked.parse(text);     // $state update - svelte re-renders
+        const text = await file.text();
+        if (text !== lastContent) {
+          lastContent = text;
+          content = marked.parse(text);
         }
-      } catch {
-        stopWatching();                     // handle went stale (file deleted/moved)
+      } catch (err) {
+        console.error('watch error:', err);
+        stopWatching();
       }
     }, 500);
   }
 
-  // clean up err'tang
   function stopWatching() {
     if (watchInterval) {
       clearInterval(watchInterval);
       watchInterval = null;
     }
     watchHandle = null;
-    lastModified = 0;
-  }
-
-  function handleFileSelect(e) {
-    loadFile(e.target.files[0]);
-    e.target.value = '';
   }
 
   function handleKeyDown(e) {
@@ -156,18 +145,20 @@
       dragDepth = 0;
       document.body.classList.remove('drag-over');
 
-      // try to get a FlieSystemFileHandle for live watching
-      const item = e.dataTransfer.items[0]
+      // try to get a FileSystemFileHandle for live watching (Chrome/Edge only)
+      const item = e.dataTransfer.items[0];
       if (item?.kind === 'file' && item.getAsFileSystemHandle) {
         try {
-            const handle = await item.getAsFileSystemHandle();
-            if (handle.kind === 'file') {
-              await loadFromHandle(handle);
-              return;
-            }
-        } catch { /* fall through */ }
+          const handle = await item.getAsFileSystemHandle();
+          if (handle.kind === 'file') {
+            await loadFromHandle(handle);
+            return;
+          }
+        } catch (err) {
+          console.warn('getAsFileSystemHandle failed:', err);
+        }
       }
-      // fallback: plain File, no watching (old  browser, Safari, or weird drop source)
+      // fallback: plain File, no live watching (Firefox, Safari)
       loadFile(e.dataTransfer.files[0]);
   }
 </script>
@@ -185,15 +176,8 @@
     <h1 class="wordmark">mdvu<span class="wolf">🐺</span></h1>
     <p class="drop-hint">
       drag+drop your .md anywhere &nbsp;·&nbsp;
-      <label for="fileinput" onclick={handleBrowseClick}>browse</label>
+      <button type="button" onclick={handleBrowseClick}>browse</button>
     </p>
-    <input
-      id="fileinput"
-      type="file"
-      accept=".md,.markdown,.txt"
-      onchange={handleFileSelect}
-      style="display: none"
-    />
   </div>
 {:else}
   <div class="reader">
