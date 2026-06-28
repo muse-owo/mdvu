@@ -37,6 +37,7 @@
       document.removeEventListener('dragleave', handleDragLeave);
       document.removeEventListener('dragover', handleDragOver);
       document.removeEventListener('drop', handleDrop);
+      stopWatching();
     };
   });
 
@@ -78,18 +79,17 @@
     e.preventDefault();
 
     try {
-      const [handle] = await window.ShowOpenFilePicker({
+      const [handle] = await window.showOpenFilePicker({
         types: [{
-          description: 'Markdown';
-          accept: { 'text/plain':['.md', '.markdown', '.txt']},
+          description: 'Markdown',
+          accept: { 'text/plain': ['.md', '.markdown', '.txt'] },
         }],
-        await loadFromHandle(handle);   // loads+starts watchin
-      } catch (err) {
-        if (err.name !== 'AbortError') console.error(err);  // AbortError = user cancelled; ignore
-      }
-    )
+        multiple: false,
+      });
+      await loadFromHandle(handle);        // loads+starts watching
+    } catch (err) {
+      if (err.name !== 'AbortError') console.error(err); // aborterror = user cancelled, ignore
     }
-    
   }
 
   // poll the handle every 500ms, re-render on change
@@ -101,7 +101,7 @@
         if (file.lastModified !== lastModified) {
           lastModified = file.lastModified;
           const text = await file.text();
-          content = marked.parse(text);     // $state update - Svelte re-renders
+          content = marked.parse(text);     // $state update - svelte re-renders
         }
       } catch {
         stopWatching();                     // handle went stale (file deleted/moved)
@@ -126,6 +126,7 @@
 
   function handleKeyDown(e) {
     if (e.key === 'Escape' && !showLanding) {
+      stopWatching();
       content = '';
       showLanding = true;
       document.title = 'mdvu';
@@ -156,7 +157,7 @@
       document.body.classList.remove('drag-over');
 
       // try to get a FlieSystemFileHandle for live watching
-      const item = e.dataTransfer.items(0)
+      const item = e.dataTransfer.items[0]
       if (item?.kind === 'file' && item.getAsFileSystemHandle) {
         try {
             const handle = await item.getAsFileSystemHandle();
