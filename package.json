@@ -35,10 +35,12 @@
       "electron/**/*"
     ],
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }]
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "public/mdvu-icon.ico"
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }],
+      "icon": "public/mdvu-icon.icns"
     },
     "linux": {
       "target": "AppImage"
