@@ -169,7 +169,7 @@
   <div class="landing">
     <img
       class="hero-logo"
-      src="/mdvu/LL-mdvu-logo-v1.png"
+      src="{import.meta.env.BASE_URL}LL-mdvu-logo-v1.png"
       alt=""
       onerror={(e) => { e.currentTarget.style.display = 'none'; }}
     />
