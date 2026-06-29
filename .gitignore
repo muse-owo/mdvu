@@ -1,5 +1,7 @@
 node_modules/
 dist/
+dist-electron/
+release/
 .astro/
 *.log
 .DS_Store
@@ -10,6 +12,3 @@ dist/
 *.swp
 *.swo
 *~
-# Electron
-dist-electron/
-release/
