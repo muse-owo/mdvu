@@ -6,5 +6,5 @@ const isElectron = process.env.BUILD_TARGET === 'electron';
 export default defineConfig({
   integrations: [svelte()],
   base: isElectron ? undefined : '/mdvu',
-  vite: isElectrom ? { base: './' } : {},
+  vite: isElectron ? { base: './' } : {},
 });
