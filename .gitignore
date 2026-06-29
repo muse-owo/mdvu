@@ -10,3 +10,6 @@ dist/
 *.swp
 *.swo
 *~
+# Electron
+dist-electron/
+release/
