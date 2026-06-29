@@ -9,6 +9,7 @@ function createWindow() {
     minHeight: 400,
     backgroundColor: '#0b0a10', 
     title: 'mdvu',
+    icon: path.join(__dirname, '../public/mdvu-icon.ico'),
     webPreferences: {
       nodeIntegration: false,      // dont expose node APIs to renderer (web content)
       contextIsolation: true,      // keep renderer sandbox'd
