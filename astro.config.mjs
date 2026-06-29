@@ -1,7 +1,10 @@
 import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 
+const isElectron = process.env.BUILD_TARGET === 'electron';
+
 export default defineConfig({
   integrations: [svelte()],
-  base: '/mdvu',
+  base: isElectron ? undefined : '/mdvu',
+  vite: isElectrom ? { base: './' } : {},
 });
