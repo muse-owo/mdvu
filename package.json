@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "simple drag-n-drop HTML markdown viewer with syntax highlighting",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "electron:preview": "cross-env BUILD_TARGET=electron astro build --outDir dist-electron && electron .",
+    "electron:dist": "cross-env BUILD_TARGET=electron astro build --outDir dist-electron && electron-builder"
   },
   "dependencies": {
     "astro": "^7.0.3",
@@ -15,6 +18,33 @@
     "svelte": "^5.56.4"
   },
   "devDependencies": {
-    "@astrojs/svelte": "^9.0.0"
+    "@astrojs/svelte": "^9.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "ca.loba-lo.mdvu",
+    "productName": "mdvu",
+    "directories": {
+      "buildResources": "public",
+      "output": "release/${version}"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }]
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["x64", "arm64"] }]
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "publish": {
+      "provider": "github"
+    }
   }
 }
