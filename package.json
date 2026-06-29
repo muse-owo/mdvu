@@ -1,7 +1,7 @@
 {
   "name": "mdvu",
-  "version": "1.0.0",
-  "description": "simple drag-n-drop HTML markdown viewer with syntax highlighting",
+  "version": "1.0.1",
+  "description": "simple drag-n-drop markdown viewer with syntax highlighting",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
