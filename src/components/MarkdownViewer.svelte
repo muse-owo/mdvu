@@ -13,9 +13,9 @@
 
   // setup marked renderer with highlight.js
   const renderer = new Renderer();
-  renderer.code = function(token) {
+  renderer.code = function(token, langArg) {
     const code = typeof token === 'object' ? token.text : token;
-    const lang = typeof token === 'object' ? token.lang : '';
+    const lang = typeof token === 'object' ? token.lang : langArg;
     const l = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
     return `<pre><code class="hljs">${hljs.highlight(code, { language: l }).value}</code></pre>`;
   };
