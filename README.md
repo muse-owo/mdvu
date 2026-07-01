@@ -43,6 +43,13 @@ npm run electron:dist
 
 ## roadmap
 - i really don't know man.
+- tabs
+- history
+- trace/copy path
+- split view
+- multiple windows
+- reload
+- custom xml highlighting
 
 ![mdvu icon](public/mdvu-icon.ico)
 
